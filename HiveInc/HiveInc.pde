@@ -36,6 +36,11 @@ void draw() {
     areaMap.creatureDisplay();
   }
   hud.display();
+  if (train) {
+    for (int i = 0; i < 100; ++i) {
+      areaMap.run();
+    }
+  }
   //test.display();
   //hTest.display();
   //nTest.display();
