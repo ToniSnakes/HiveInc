@@ -8,19 +8,19 @@ class Hive {
   
   float totalFood;
   
-  Hive (float x, float y) {
-    super();
+  int id;
+  
+  Hive (float x, float y, int id_) {
     location = new PVector(x,y);
     type = "Hive";
-    //creatures = new ArrayList<Creature>();
-    for (int i = 0; i < creatures.length; ++i) {
-      //creatures.add(new Creature(location.x,location.y,i));
-      creatures[i] = new Creature(location.x,location.y,i);
+    id = id_;
+    for (int i = 0; i < creatures.length; ++i) { // initialize the population
+      creatures[i] = new Creature(location.x,location.y,i,id);
     }
     best = creatures[0];
   }
   
-  void fitSort (int a, int b) {
+  void fitSort (int a, int b) { // the only real optimization around...
     int mid = (a + b) / 2;
     if (a != b) {
       fitSort(a,mid);
@@ -59,7 +59,7 @@ class Hive {
     ++deaths;
     float sum = 0;
     float max = 0;
-    for (int i = 0; i < creatures.length; ++i) {
+    for (int i = 0; i < creatures.length; ++i) { // check the fitnesses
       sum += creatures[i].fitness;
       if (creatures[i].fitness > max) {
         max = creatures[i].fitness;
@@ -69,14 +69,14 @@ class Hive {
     averageFitness = sum / creatures.length;
     maxFitness = max;
     
-    if (!best.alive) {
+    if (!best.alive) { // keeping the best alive!
       return best.dna;
     }
     
     ArrayList<Creature> matingPool = new ArrayList<Creature>();
     fitSort(0,creatures.length-1);
     float num = creatures.length, dub = num;
-    for (int i = 0; i < creatures.length; ++i) {
+    for (int i = 0; i < creatures.length; ++i) { // classic evolutionary maneuver
       int n = int(num/dub * 100);
       for (int j = 1; j <= n; ++j) {
         matingPool.add(creatures[i]);
@@ -99,21 +99,21 @@ class Hive {
         creatures[i].update();
       }
       else {
-        totalFood += creatures[i].foodDelivered;
         DNA next = reproduce(); // keeping the best of the best alive!
-        creatures[i] = new Creature(location.x,location.y,i); 
+        creatures[i] = new Creature(location.x,location.y,i,id); 
         creatures[i].dna.gets(next);
       }
     }
   }
+  
   void creatureDisplay () {
     for (Creature c: creatures) {
       c.display();
     }
   }
   
-  void place (float food, int id) {
-    // !fitness!
+  void place (float food) {
+    totalFood += food;
   }
   
   boolean includes (PVector loc) {

@@ -4,7 +4,7 @@ class Creature {
   PVector acceleration;
   float angle;
   float r = 9;
-  int id; // just in case
+  int id, hiveId; // just in case
   
   DNA dna;
   
@@ -27,11 +27,12 @@ class Creature {
   
   String name; // why not?
   
-  Creature (float x, float y, int id_) {
+  Creature (float x, float y, int id_, int hid) {
     location = new PVector(x,y);
     velocity = new PVector(0,0);
     acceleration = new PVector(0,0);
     id = id_;
+    hiveId = hid;
     angle = random(360);
     //angle = -90;
     dna = new DNA();
@@ -60,20 +61,18 @@ class Creature {
     
     //?Better name generator?
     //for (int i = 1; i <= 5; ++i) {
-      name = "Test-";
+      name = "Worker-";
+      name += hiveId;
+      name += "-";
       name += id;
     //}
   }
   
   void applyForce (PVector force) {
-    acceleration.add(force); // !when calculating acceleration, take the creature's orientation into consideration!
+    acceleration.add(force);
   }
   
   void checkEdges() {
-    /*if (location.x < 0 || location.x > width-hudMargin || location.y < 0 || location.y > height) {
-      //alive = false; // what we actually need
-      location = new PVector(width/2-200,height/2); // for now
-    }*/
     if (location.x < 0 || location.x > width-hudMargin) {
       location.x = (location.x + width-hudMargin) % (width-hudMargin);
     }
@@ -83,7 +82,7 @@ class Creature {
   }
   
   void fitness () {
-    fitness = (foodDelivered + age/lifespan) / 1;
+    fitness = (foodDelivered/100 + age/lifespan) / 1;
     fitness = pow(fitness,2);
   }
   
@@ -105,26 +104,26 @@ class Creature {
       pHP = HP;
       act();
       checkBelow();
-      if (E > maxspeed) {
+      if (E > maxspeed) { // can only move if it has energy
         velocity.add(acceleration);
         velocity.limit(maxspeed);
         location.add(velocity);
         pE = E;
         E -= velocity.mag();
       }
-      else {
+      else { // punish the inefficient!
         HP -= 10;
       }
-      if (Hg > 0) {
+      if (Hg > 0) { // always growing hungrier
         pHg = Hg;
         Hg -= 1;
       }
-      else {
+      else { // punish those who do not contribute to society!
         HP -= 10;
       }
       checkEdges();
       acceleration.mult(0);
-      age += 1;
+      age += 1; // growing older
       if (age > lifespan || HP < 0) {
         alive = false;
       }
@@ -156,13 +155,13 @@ class Creature {
     ++i;
     inputs[i] = age; // age
     ++i;
-    if (i != dna.l1 - 1) {
+    if (i != dna.l1 - 1) { // debugging option, just in case
       print("Count the inputs!");
       pause = true;
     }
   }
   
-  float process (float node) {
+  float process (float node) { // I believe this is a sigmoid function
     return (1/(1+pow(e,-node)));
   }
   
@@ -174,9 +173,8 @@ class Creature {
   }
   
   void think () {
-    // !decide whether or not to use a brain!
     getInputs();
-    hidden = clearNodes(hidden);
+    hidden = clearNodes(hidden); // clearing previous information
     hidden[hidden.length-1] = 1; // remember to update the bias
     outputs = clearNodes(outputs);
     for (int i = 0; i < dna.l1; ++i) {
@@ -204,8 +202,9 @@ class Creature {
     ++i;
     turnR(outputs[i]); // turn right/left
     ++i;
-    interact(outputs[i]); // exchange materials/food
-    ++i;
+    //interact(outputs[i]); // exchange materials/food     =[[ It had to go =[[
+    //++i;
+    interact();
     if (i != dna.l3) {
       print("Count the outputs!");
       pause = true;
@@ -231,14 +230,14 @@ class Creature {
     angle += aSpeed * node;
   }
   
-  void interact (float node) { // for now, handles damage as well
-    if (node > 0.95) {
-      boolean found = false;
+  void interact () { // for now, handles damage as well
+      boolean found = false; // no need to search other locations once one is found
       int i = 0;
       while (i < areaMap.hives.size() && !found) {
         Hive h = areaMap.hives.get(i);
-        if (h.includes(location)) { 
+        if (h.includes(location)) { // deliver the food and refill
           foodDelivered += food;
+          h.place(food);
           food = 0;
           mat = maxCarry;
           HP = maxHP;
@@ -251,15 +250,14 @@ class Creature {
       i = 0;
       while (i < areaMap.nodes.size() && !found) {
         Node n = areaMap.nodes.get(i);
-        if (n.includes(location)) { 
-          n.place(mat,id);
+        if (n.includes(location)) { // deliver the materials
+          n.place(mat);
           mat = 0;
           food = maxCarry;
           found = true;
         }
         ++i;
       }
-    }
   }
   
   void display () {

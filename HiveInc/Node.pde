@@ -2,16 +2,22 @@ class Node {
   PVector location;
   String type;
   float w = 30;
-  float progress = 0;
+  float progress = 0, upThreshold = 9000;
   
   Node (float x, float y) {
-    super();
     location = new PVector(x,y);
     type = "Node";
   }
   
-  void place (float mat, int id) {
+  void place (float mat) {
     progress += mat;
+  }
+  
+  boolean upgrade () {
+    if (progress >= upThreshold) {
+      return true;
+    }
+    return false;
   }
   
   boolean includes (PVector loc) {
