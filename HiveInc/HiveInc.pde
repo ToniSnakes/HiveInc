@@ -35,4 +35,8 @@ void keyPressed () {
   if (key == 't' && pause) {
     train = !train;
   }
+  if (key == 'r' && pause && !train) { // reset
+    areaMap = new Map();
+    hud = new HUD();
+  }
 }
