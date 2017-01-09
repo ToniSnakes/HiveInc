@@ -66,7 +66,7 @@ class HUD {
     rect(W-5,height-5,10,10);
     
     fill(0);
-    text("Pause: p    Train: t", 30, height-10);
+    text("Pause: p    Train: t    Restart: r", 30, height-10);
     
     popMatrix();
   }
