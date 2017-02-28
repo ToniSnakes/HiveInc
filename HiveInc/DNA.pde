@@ -1,5 +1,5 @@
 class DNA {
-  int l1 = 19; // number of nodes on the first layer
+  int l1 = 11; // number of nodes on the first layer
   int l2 = l1 + 1;
   int l3 = 3; // so sad
   float[][] lay12 = new float[l1][l2]; // weights between layer 1 and 2

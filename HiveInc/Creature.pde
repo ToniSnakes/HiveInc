@@ -135,13 +135,16 @@ class Creature {
     int i = 0;
     loadPixels();
     for (Eye e: eyes) { // get the inputs for all the eyes
-      color c = e.look(location,angle);
-      inputs[i] = red(c);
+      //color c = e.look(location,angle);
+      float blend = e.look(location,angle);
+      inputs[i] = blend;
+      ++i;
+      /*inputs[i] = red(c);
       ++i;
       inputs[i] = green(c);
       ++i;
       inputs[i] = blue(c);
-      ++i;
+      ++i;*/
     }
     inputs[i] = HP - pHP; // hp diff
     ++i;

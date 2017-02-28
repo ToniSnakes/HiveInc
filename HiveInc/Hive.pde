@@ -2,7 +2,7 @@ class Hive {
   PVector location;
   String type;
   float w = 30;
-  Creature[] creatures = new Creature[60];
+  Creature[] creatures = new Creature[40];
   float maxFitness, averageFitness;
   Creature best;
   
