@@ -1,6 +1,6 @@
 Map areaMap;
 HUD hud;
-float mutationChance = 0.01;
+float mutationChance = 0.001;
 float hudMargin = 400;
 float e = 2.71828;
 int deaths = 0;
@@ -24,6 +24,9 @@ void draw() {
   }
   if (!train) {
     areaMap.creatureDisplay();
+  }
+  for (Node n: areaMap.nodes) {
+    n.debugDisplay();
   }
   hud.display(); 
 }

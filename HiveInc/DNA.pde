@@ -4,6 +4,7 @@ class DNA {
   int l3 = 3; // so sad
   float[][] lay12 = new float[l1][l2]; // weights between layer 1 and 2
   float[][] lay23 = new float[l2][l3];
+  float angle;
   
   DNA () {
     for (int i = 0; i < l1; ++i) { // initializing with random weights
@@ -16,6 +17,7 @@ class DNA {
         lay23[i][j] = random(-1,1);
       }
     }
+    angle = random(360);
   }
   
   DNA crossover (DNA other) {
@@ -50,6 +52,13 @@ class DNA {
         }
       }
     }
+    float ran = random(1);
+    if (ran < 0.5) {
+      child.angle = angle;
+    }
+    else {
+      child.angle = other.angle;
+    }
     return child;
   }
   
@@ -64,5 +73,6 @@ class DNA {
         lay23[i][j] = other.lay23[i][j];
       }
     }
+    angle = other.angle;
   }
 }

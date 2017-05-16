@@ -11,8 +11,8 @@ class Creature {
   ArrayList<Eye> eyes;
   
   float HP, pHP, maxHP = 150; //hit points
-  float E, pE, maxE = 500; // energy, previous energy, max energy
-  float Hg, pHg, maxHg = 200; // hunger
+  float E, pE, maxE = 5000; // energy, previous energy, max energy
+  float Hg, pHg, maxHg = 2000; // hunger
   //float carry;
   float food, mat, maxCarry = 300; // amount of food and materials
   float age, lifespan = 3000;
@@ -23,7 +23,7 @@ class Creature {
   
   float[] inputs, hidden, outputs;
   
-  float foodDelivered, fitness;
+  float foodGathered, foodDelivered, materialsPlaced, fitness;
   
   String name; // why not?
   
@@ -33,9 +33,10 @@ class Creature {
     acceleration = new PVector(0,0);
     id = id_;
     hiveId = hid;
-    angle = random(360);
+    //angle = random(360);
     //angle = -90;
     dna = new DNA();
+    angle = dna.angle;
     eyes = new ArrayList<Eye>();
     eyes.add(new Eye(r * 1.0, -40));
     eyes.add(new Eye(r * 0.8, -15));
@@ -58,6 +59,8 @@ class Creature {
     alive = true;
     
     foodDelivered = 0;
+    foodGathered = 0;
+    materialsPlaced = 0;
     
     //?Better name generator?
     //for (int i = 1; i <= 5; ++i) {
@@ -82,7 +85,8 @@ class Creature {
   }
   
   void fitness () {
-    fitness = (foodDelivered/100 + age/lifespan) / 1;
+    //fitness = (foodDelivered/100 + age/lifespan + foodGathered/1000 + materialsPlaced/10) / 10;
+    fitness = (foodDelivered/10 + foodGathered/1000 + materialsPlaced/100) / 10;
     fitness = pow(fitness,2);
   }
   
@@ -241,8 +245,11 @@ class Creature {
         if (h.includes(location)) { // deliver the food and refill
           foodDelivered += food;
           h.place(food);
+          if (h.currentFood*10 >= maxCarry) {
+            mat = maxCarry;
+            h.currentFood -= maxCarry/10;
+          }
           food = 0;
-          mat = maxCarry;
           HP = maxHP;
           E = maxE;
           Hg = maxHg;
@@ -254,9 +261,12 @@ class Creature {
       while (i < areaMap.nodes.size() && !found) {
         Node n = areaMap.nodes.get(i);
         if (n.includes(location)) { // deliver the materials
+          //print(mat);
           n.place(mat);
+          materialsPlaced += mat;
           mat = 0;
           food = maxCarry;
+          foodGathered += maxCarry;
           found = true;
         }
         ++i;

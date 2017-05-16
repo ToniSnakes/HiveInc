@@ -6,7 +6,7 @@ class Hive {
   float maxFitness, averageFitness;
   Creature best;
   
-  float totalFood;
+  float totalFood, currentFood;
   
   int id;
   
@@ -18,6 +18,8 @@ class Hive {
       creatures[i] = new Creature(location.x,location.y,i,id);
     }
     best = creatures[0];
+    totalFood = 0;
+    currentFood = 3000;
   }
   
   void fitSort (int a, int b) { // the only real optimization around...
@@ -102,8 +104,10 @@ class Hive {
         DNA next = reproduce(); // keeping the best of the best alive!
         creatures[i] = new Creature(location.x,location.y,i,id); 
         creatures[i].dna.gets(next);
+        creatures[i].angle = next.angle;
       }
     }
+    currentFood += 10;
   }
   
   void creatureDisplay () {
@@ -114,6 +118,7 @@ class Hive {
   
   void place (float food) {
     totalFood += food;
+    currentFood += food;
   }
   
   boolean includes (PVector loc) {

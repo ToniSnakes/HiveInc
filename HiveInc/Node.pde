@@ -33,4 +33,11 @@ class Node {
     rectMode(CENTER);
     rect(location.x,location.y,w,w);
   }
+  
+  void debugDisplay() {
+    stroke(0);
+    fill(0,255-progress/upThreshold*255,0);
+    rectMode(CENTER);
+    rect(location.x,location.y,w,w);
+  }
 }
